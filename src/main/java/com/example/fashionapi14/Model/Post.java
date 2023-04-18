@@ -1,5 +1,6 @@
 package com.example.fashionapi14.Model;
 
+import com.example.fashionapi14.DTO.PostDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,4 +21,9 @@ public class Post {
     private User user;
     @OneToMany
     private List<Comment> comment;
+
+    public Post(PostDTO postDTO) {
+        this.title = postDTO.getTitle();
+        this.post = postDTO.getPost();
+    }
 }

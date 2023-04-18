@@ -1,5 +1,6 @@
 package com.example.fashionapi14.Controller;
 
+import com.example.fashionapi14.DTO.PostDTO;
 import com.example.fashionapi14.Model.Post;
 import com.example.fashionapi14.Service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,10 +23,10 @@ public class PostController {
 
 
     @PostMapping("/add-post")
-    public Post savePost(@RequestBody Post post, HttpServletRequest httpServletRequest){
+    public Post savePost(@RequestBody PostDTO postDTO, HttpServletRequest httpServletRequest){
         HttpSession session = httpServletRequest.getSession();
         Long id = (Long) session.getAttribute("id");
-        return postService.savePost(post, id);
+        return postService.savePost(new Post(postDTO), id);
     }
 
     @GetMapping("/post-list")
