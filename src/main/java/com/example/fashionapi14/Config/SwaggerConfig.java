@@ -28,7 +28,7 @@ public class SwaggerConfig {
         return  GroupedOpenApi
                 .builder()
                 .group("Users")
-                .pathsToMatch("/users/**").build();
+                .pathsToMatch("/user/**").build();
     }
 
     @Bean
@@ -44,7 +44,7 @@ public class SwaggerConfig {
         return  GroupedOpenApi
                 .builder()
                 .group("Post")
-                .pathsToMatch("/post/**").build();
+                .pathsToMatch("/posts/**").build();
     }
 
 }
