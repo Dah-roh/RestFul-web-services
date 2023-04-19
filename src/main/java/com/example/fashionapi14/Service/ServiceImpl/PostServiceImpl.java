@@ -57,8 +57,16 @@ public class PostServiceImpl implements PostService {
         return postRepositories.save(existingPost);
     }
 
+
+//TODO: DELETE POST UNIQUE TO USER
     @Override
-    public void deletePost(Long id) {
+    public void deletePost(Long id, Long loggedInUserId) {
+        User loggedUser = userRepositories.findById(loggedInUserId)
+                .orElseThrow(()->
+                        new NullPointerException("No user found with id: "+ id));
+        if(loggedUser.isBlocked()){
+            throw new RuntimeException("You do not have the right privilege to complete this action: DELETE POST");
+        }
         postRepositories.deleteById(id);
     }
 }

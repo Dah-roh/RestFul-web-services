@@ -25,6 +25,9 @@ public class UserController {
     @PostMapping("/login")
     public User homeController(@RequestBody UserDTO userDTO, HttpServletRequest httpServletRequest){
          User user = userServices.logInUser(userDTO);
+         if (user.isBlocked()){
+             throw new RuntimeException("Blocked user: No login access!");
+         }
         HttpSession session = httpServletRequest.getSession();
         session.setAttribute("id", user.getId());
         return user;

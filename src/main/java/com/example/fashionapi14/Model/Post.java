@@ -16,9 +16,13 @@ public class Post {
     private String post;
     private Long likes;
     private Long dislike;
+
+    //Composition through aggregation below:
     @ManyToOne
     private User user;
     @OneToMany
     private List<Comment> comment;
+    @Column
+    private boolean isBanned = false;
 
 }

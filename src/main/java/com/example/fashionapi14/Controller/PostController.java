@@ -33,14 +33,21 @@ public class PostController {
         return postService.findAll();
     }
 
+    @GetMapping("/post/{id}")
+    public Post getPost(@PathVariable("id") Long id){
+        return postService.findById(id);
+    }
+
     @PutMapping("/update/{id}")
     public Post updatePost(@PathVariable("id") Long id, @RequestBody Post post){
         return postService.updatePost(id, post);
     }
 
     @DeleteMapping("/delete/{id}")
-    public String deletePost(@PathVariable("id") Long id){
-        postService.deletePost(id);
+    public String deletePost(@PathVariable("id") Long id, HttpServletRequest httpServletRequest){
+        HttpSession session = httpServletRequest.getSession();
+        Long loggedInUserId = (Long) session.getAttribute("id");
+        postService.deletePost(id, loggedInUserId);
         return "Post successfully deleted!";
     }
 }
