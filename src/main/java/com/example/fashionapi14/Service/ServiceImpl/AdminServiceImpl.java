@@ -1,5 +1,6 @@
 package com.example.fashionapi14.Service.ServiceImpl;
 
+import com.example.fashionapi14.Enums.Role;
 import com.example.fashionapi14.Model.Post;
 import com.example.fashionapi14.Model.User;
 import com.example.fashionapi14.Repositories.PostRepositories;
@@ -29,7 +30,7 @@ public class AdminServiceImpl implements AdminService {
     public List<User> viewAllUsers(Long id){
         User loggedInUser = userRepositories.findById(id)
                 .orElseThrow(()-> new NullPointerException("No such user with id: "+ id));
-        if (loggedInUser.getRole().equalsIgnoreCase("admin")){
+        if (loggedInUser.getRole().name().equalsIgnoreCase("admin")){
             return userRepositories.findAll();
         }
         throw new RuntimeException("You have no admin privileges");
@@ -47,11 +48,11 @@ public class AdminServiceImpl implements AdminService {
 
         User existingUser = userRepositories.findById(id)
                 .orElseThrow(()-> new NullPointerException("No such user with id: "+ id));
-        if (!loggedInUser.getRole().equalsIgnoreCase("admin")){
+        if (!loggedInUser.getRole().name().equalsIgnoreCase("admin")){
             throw new RuntimeException("You have no user role edit privileges for role: "+ newRole);
         }
-        if(loggedInUser.getRole().equalsIgnoreCase("admin")) {
-            existingUser.setRole(newRole);
+        if(loggedInUser.getRole().name().equalsIgnoreCase("admin")) {
+            existingUser.setRole(Role.valueOf(newRole));
         }
         return userRepositories.save(existingUser);
     }
@@ -71,7 +72,7 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(()-> new NullPointerException("No such user with id: "+ loggedInUserId));
         User editRoleUser = userRepositories.findById(id)
                 .orElseThrow(()-> new NullPointerException("No such user with id: "+ id));
-        if (loggedInUser.getRole().equalsIgnoreCase("admin")){
+        if (loggedInUser.getRole().name().equalsIgnoreCase("admin")){
 
             editRoleUser.setBlocked(!editRoleUser.isBlocked());
             userRepositories.save(editRoleUser);

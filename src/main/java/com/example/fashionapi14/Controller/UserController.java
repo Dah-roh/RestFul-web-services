@@ -35,7 +35,7 @@ public class UserController {
 
     //snake_case, kebab-case, pascalCase,
     @PostMapping("/sign-up")
-    public User signUp(@RequestBody User user){
+    public String signUp(@RequestBody UserDTO user){
         //TODO:Check null values
         return userServices.saveUser(user);
     }

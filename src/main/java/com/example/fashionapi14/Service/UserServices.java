@@ -6,7 +6,7 @@ import com.example.fashionapi14.Model.User;
 import java.util.List;
 
 public interface UserServices {
-    User saveUser(User user);
+    String saveUser(UserDTO user);
 
     String deleteUser(Long id, Long loggedInUserId);
 
