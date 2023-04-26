@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface AdminService {
 
-    List<User> viewAllUsers(Long id);
+    List<User> viewAllUsers(String username);
 
-    User editUserRole(Long id, String newRole, Long loggedInUserId);
+    User editUserRole(Long id, String newRole, String username);
 
     boolean banOrUnbanPost(Long id);
 
-    User blockUser(Long id, Long loggedInUserId);
+    User blockUser(Long id, String username);
 }

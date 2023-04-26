@@ -23,14 +23,10 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public Post savePost(Post post, Long id) {
-        User user = userRepositories.findById(id)
+    public Post savePost(Post post, String username) {
+        User user = userRepositories.findByUsername(username)
                 .orElseThrow(()->
-                        new NullPointerException("No user found with id: "+ id));
-//        if (user.getRole().equals("admin")) {
-//            post.setUser(user);
-//            return postRepositories.save(post);
-//        }
+                        new NullPointerException("No user found with username: "+ username));
         post.setUser(user);
         return postRepositories.save(post);
     }
@@ -60,10 +56,10 @@ public class PostServiceImpl implements PostService {
 
 //TODO: DELETE POST UNIQUE TO USER
     @Override
-    public void deletePost(Long id, Long loggedInUserId) {
-        User loggedUser = userRepositories.findById(loggedInUserId)
+    public void deletePost(Long id, String username) {
+        User loggedUser = userRepositories.findByUsername(username)
                 .orElseThrow(()->
-                        new NullPointerException("No user found with id: "+ id));
+                        new NullPointerException("No user found with username: "+ username));
         if(loggedUser.isBlocked()){
             throw new RuntimeException("You do not have the right privilege to complete this action: DELETE POST");
         }

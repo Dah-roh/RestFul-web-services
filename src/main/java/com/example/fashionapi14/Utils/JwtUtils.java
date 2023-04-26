@@ -7,7 +7,6 @@ import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
@@ -25,6 +24,10 @@ public class JwtUtils {
         return DatatypeConverter.printBase64Binary(new byte[512/8]);
     }
 
+    public static Key generateKey(){
+        byte[] secretKeyInBytes = DatatypeConverter.parseBase64Binary(generateSecret());
+        return new SecretKeySpec(secretKeyInBytes, "HmacSHA512");
+    }
 
     public String generateToken(UserDetails userDetails){
         Map<String, Object> claims =  new HashMap<>();
@@ -32,10 +35,6 @@ public class JwtUtils {
         return createToken(claims, userDetails.getUsername());
     }
 
-    public static Key generateKey(){
-        byte[] secretKeyInBytes = DatatypeConverter.parseBase64Binary(generateSecret());
-        return new SecretKeySpec(secretKeyInBytes, "HmacSHA512");
-    }
 
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
@@ -50,6 +49,11 @@ public class JwtUtils {
     public String extractUsername(String token){
         Claims claims = extractAllClaims(token);
         return claims.getSubject();
+    }
+
+    public Object extractUserRole(String token){
+        Claims claims = extractAllClaims(token);
+        return claims.get("Role");
     }
 
     public boolean isTokenExpired(String token){

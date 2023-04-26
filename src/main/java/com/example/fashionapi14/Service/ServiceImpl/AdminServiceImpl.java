@@ -27,9 +27,9 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public List<User> viewAllUsers(Long id){
-        User loggedInUser = userRepositories.findById(id)
-                .orElseThrow(()-> new NullPointerException("No such user with id: "+ id));
+    public List<User> viewAllUsers(String username){
+        User loggedInUser = userRepositories.findByUsername(username)
+                .orElseThrow(()-> new NullPointerException("No such user with username: "+ username));
         if (loggedInUser.getRole().name().equalsIgnoreCase("admin")){
             return userRepositories.findAll();
         }
@@ -37,14 +37,14 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public User editUserRole(Long id, String newRole, Long loggedInUserId){
+    public User editUserRole(Long id, String newRole, String username){
         String role = newRole.toLowerCase();
 //        if (!role.equalsIgnoreCase("client")||
 //                !role.equalsIgnoreCase("admin")){
 //            throw new RuntimeException("No such user role as :"+ role+", for User role (client or admin)");
 //        }
-        User loggedInUser = userRepositories.findById(loggedInUserId)
-                .orElseThrow(()-> new NullPointerException("No such user with id: "+ loggedInUserId));
+        User loggedInUser = userRepositories.findByUsername(username)
+                .orElseThrow(()-> new NullPointerException("No such user with username: "+ username));
 
         User existingUser = userRepositories.findById(id)
                 .orElseThrow(()-> new NullPointerException("No such user with id: "+ id));
@@ -67,9 +67,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public User blockUser(Long id, Long loggedInUserId) {
-        User loggedInUser = userRepositories.findById(loggedInUserId)
-                .orElseThrow(()-> new NullPointerException("No such user with id: "+ loggedInUserId));
+    public User blockUser(Long id, String username) {
+        User loggedInUser = userRepositories.findByUsername(username)
+                .orElseThrow(()-> new NullPointerException("No such user with username: "+ username));
         User editRoleUser = userRepositories.findById(id)
                 .orElseThrow(()-> new NullPointerException("No such user with id: "+ id));
         if (loggedInUser.getRole().name().equalsIgnoreCase("admin")){
@@ -78,6 +78,6 @@ public class AdminServiceImpl implements AdminService {
             userRepositories.save(editRoleUser);
             return editRoleUser;
         }
-        throw new RuntimeException("You have no user blocking privileges with id: "+ loggedInUserId);    }
+        throw new RuntimeException("You have no user blocking privileges with id: "+ username);    }
 
 }

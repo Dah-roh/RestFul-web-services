@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface PostService {
 
-    Post savePost(Post post, Long id);
+    Post savePost(Post post, String username);
 
     List<Post> findAll();
 
@@ -14,5 +14,5 @@ public interface PostService {
 
     Post updatePost(Long id, Post post);
 
-    void deletePost(Long id, Long loggedInUserId);
+    void deletePost(Long id, String username);
 }

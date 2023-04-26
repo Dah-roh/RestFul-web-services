@@ -5,6 +5,8 @@ import com.example.fashionapi14.Service.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,19 +22,16 @@ public class AdminController {
     }
 
     @GetMapping("/viewUsers")
-    public List<User> viewAllUsers(HttpServletRequest httpServletRequest){
-        HttpSession session = httpServletRequest.getSession();
-        Long loggedInUser = (Long) session.getAttribute("id");
-        return adminService.viewAllUsers(loggedInUser);
+    public List<User> viewAllUsers(){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return adminService.viewAllUsers(userDetails.getUsername());
     }
 
     @PutMapping("/edit-role/{id}")
     public User editUserRole(@PathVariable("id") Long id,
-                             @RequestParam("role") String role,
-                             HttpServletRequest httpServletRequest){
-        HttpSession session = httpServletRequest.getSession();
-        Long loggedInUserId = (Long) session.getAttribute("id");
-        return adminService.editUserRole(id, role, loggedInUserId);
+                             @RequestParam("role") String role){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return adminService.editUserRole(id, role, userDetails.getUsername());
     }
 
 
@@ -42,10 +41,8 @@ public class AdminController {
     }
 
     @PostMapping("/block-user/{id}")
-    public User blockUser(@PathVariable("id")Long id,
-                          HttpServletRequest httpServletRequest){
-        HttpSession session = httpServletRequest.getSession();
-        Long loggedInUserId = (Long) session.getAttribute("id");
-            return adminService.blockUser(id, loggedInUserId);
+    public User blockUser(@PathVariable("id")Long id){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return adminService.blockUser(id, userDetails.getUsername());
     };
 }

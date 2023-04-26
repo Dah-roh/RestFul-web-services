@@ -5,6 +5,8 @@ import com.example.fashionapi14.Service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +24,10 @@ public class PostController {
 
 
     @PostMapping("/add-post")
-    public Post savePost(@RequestBody Post post, HttpServletRequest httpServletRequest){
-        HttpSession session = httpServletRequest.getSession();
-        Long id = (Long) session.getAttribute("id");
-        return postService.savePost(post, id);
+    public Post savePost(@RequestBody Post post){
+        System.out.println("I am making a post " + post);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return postService.savePost(post, userDetails.getUsername());
     }
 
     @GetMapping("/post-list")
@@ -45,9 +47,8 @@ public class PostController {
 
     @DeleteMapping("/delete/{id}")
     public String deletePost(@PathVariable("id") Long id, HttpServletRequest httpServletRequest){
-        HttpSession session = httpServletRequest.getSession();
-        Long loggedInUserId = (Long) session.getAttribute("id");
-        postService.deletePost(id, loggedInUserId);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        postService.deletePost(id, userDetails.getUsername());
         return "Post successfully deleted!";
     }
 }

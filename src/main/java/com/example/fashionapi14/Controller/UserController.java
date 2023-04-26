@@ -1,11 +1,13 @@
 package com.example.fashionapi14.Controller;
 
 import com.example.fashionapi14.DTO.UserDTO;
+import com.example.fashionapi14.Model.Token;
 import com.example.fashionapi14.Model.User;
 import com.example.fashionapi14.Service.UserServices;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,20 +25,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public User homeController(@RequestBody UserDTO userDTO, HttpServletRequest httpServletRequest){
-         User user = userServices.logInUser(userDTO);
-         if (user.isBlocked()){
-             throw new RuntimeException("Blocked user: No login access!");
-         }
-        HttpSession session = httpServletRequest.getSession();
-        session.setAttribute("id", user.getId());
-        return user;
+    public Token homeController(@RequestBody UserDTO userDTO){
+         Token token = userServices.logInUser(userDTO);
+        return token;
     }
 
     //snake_case, kebab-case, pascalCase,
     @PostMapping("/sign-up")
-    public String signUp(@RequestBody UserDTO user){
-        //TODO:Check null values
+    public Token signUp(@RequestBody UserDTO user){
         return userServices.saveUser(user);
     }
 

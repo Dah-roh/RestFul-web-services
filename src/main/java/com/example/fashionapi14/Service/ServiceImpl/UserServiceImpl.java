@@ -1,7 +1,9 @@
 package com.example.fashionapi14.Service.ServiceImpl;
 
 import com.example.fashionapi14.DTO.UserDTO;
+import com.example.fashionapi14.Model.Token;
 import com.example.fashionapi14.Model.User;
+import com.example.fashionapi14.Repositories.TokenRepository;
 import com.example.fashionapi14.Repositories.UserRepositories;
 import com.example.fashionapi14.Service.UserServices;
 import com.example.fashionapi14.Utils.JwtUtils;
@@ -20,12 +22,14 @@ public class UserServiceImpl implements UserServices, UserDetailsService {
 
     private UserRepositories userRepositories;
     private PasswordEncoder passwordEncoder;
+    private TokenRepository tokenRepository;
     private JwtUtils jwtUtils;
 
     @Autowired
-    public UserServiceImpl(UserRepositories userRepositories, PasswordEncoder passwordEncoder, JwtUtils jwtUtils){
+    public UserServiceImpl(UserRepositories userRepositories, PasswordEncoder passwordEncoder, TokenRepository tokenRepository, JwtUtils jwtUtils){
         this.userRepositories = userRepositories;
         this.passwordEncoder = passwordEncoder;
+        this.tokenRepository = tokenRepository;
         this.jwtUtils = jwtUtils;
     }
 
@@ -34,19 +38,35 @@ public class UserServiceImpl implements UserServices, UserDetailsService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public String saveUser(UserDTO user){
+    public Token saveUser(UserDTO user){
         try{
             User saveUser = new User(user);
             saveUser.setPassword(passwordEncoder.encode(saveUser.getPassword()));
             User user1 = userRepositories.save(saveUser);
             UserDetails userDetails = loadUserByUsername(user1.getUsername());
-            return jwtUtils.generateToken(userDetails);
+            String token =jwtUtils.generateToken(userDetails);
+             Token tokenToSave = Token.builder()
+                    .token(token)
+                    .user(user1)
+                     .isExpired(false)
+                     .isRevoked(false)
+                     .build();
+             return tokenRepository.save(tokenToSave);
         }
         catch (Exception e){
             throw new RuntimeException("Cannot save user "+ e.getMessage());
         }
     }
 
+
+    public void revokeAllTokensForUser(User user){
+        List<Token> tokens = tokenRepository.findAllByUser(user);
+        tokens.stream().forEach(token->{
+            token.setRevoked(true);
+            token.setExpired(true);
+        });
+        tokenRepository.saveAll(tokens);
+    }
 
     @Override
     public String deleteUser(Long id, Long loggedInUserId){
@@ -65,8 +85,22 @@ public class UserServiceImpl implements UserServices, UserDetailsService {
     }
 
     @Override
-    public User logInUser(UserDTO userDTO) {
-        return userRepositories.findByUsernameAndPassword(userDTO.getUsername(), userDTO.getPassword());
+    @Transactional(rollbackOn = Exception.class)
+    public Token logInUser(UserDTO userDTO) {
+        User user = userRepositories.findByUsername(userDTO.getUsername())
+                .orElseThrow();
+        UserDetails userDetails = loadUserByUsername(userDTO.getUsername());
+        revokeAllTokensForUser(user);
+        String token  = jwtUtils.generateToken(userDetails);
+        Token tokenToSave = Token.builder()
+                .token(token)
+                .user(user)
+                .isExpired(false)
+                .isRevoked(false)
+                .build();
+         tokenRepository.save(tokenToSave);
+                return tokenToSave;
+
     }
 
     @Override
