@@ -35,7 +35,7 @@ public class PostControllerIntegrationTest {
 
 
     @Test
-    public void getAllPost(){
+    public void forbiddenGetAllPost(){
         Post post = new Post();
         User user =  new User();
         user.setId(2l);
@@ -55,8 +55,8 @@ public class PostControllerIntegrationTest {
         ResponseEntity<List<Post>> response = restTemplate.exchange("/posts/post-list", HttpMethod.GET, null, new ParameterizedTypeReference<List<Post>>() {
         });
 
-        Assert.assertEquals(postList, response.getBody());
-        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assert.assertEquals(null, response.getBody());
+        Assert.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
 
     }
 }
