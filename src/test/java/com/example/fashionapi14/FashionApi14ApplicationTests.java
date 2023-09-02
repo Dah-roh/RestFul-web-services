@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class FashionApi14ApplicationTests {
 
     @Test
-    void contextLoads() {
+    void testStrings() {
         Assertions.assertEquals("", new String());
     }
 
